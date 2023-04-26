@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Encryption/Decryption</title>
+</head>
+<body>
+    <h1>File Encryption/Decryption</h1>
+    <form action="/encrypt" method="post" enctype="multipart/form-data">
+        <label for="file">Upload a file to encrypt:</label>
+        <input type="file" name="file" id="file"><br><br>
+        <input type="submit" value="Encrypt">
+    </form>
+
+    <br>
+
+    <form action="/decrypt" method="post" enctype="multipart/form-data">
+        <label for="file">Upload a file to decrypt:</label>
+        <input type="file" name="file" id="file"><br><br>
+        <input type="submit" value="Decrypt">
+    </form>
+	<br>
+	<form action="/hash" method="POST" enctype="multipart/form-data">
+	    <label for="file">Upload file to hash:</label>
+		<input type="file" id="file" name="file"><br><br>
+		<button type="submit">Hash</button>
+	</form>
+	<br>
+	<form action="/compare" method="POST" enctype="multipart/form-data">
+	    <label for="file1">Upload first file to compare:</label>
+		<input type="file" id="file1" name="file1"><br><br>
+		<label for="file2">Upload second file to compare:</label>
+		<input type="file" id="file2" name="file2"><br><br>
+		<button type="submit">Compare</button>
+	</form>
+</body>
+</html>
