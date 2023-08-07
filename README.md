@@ -11,13 +11,13 @@ This is a Flask web application that provides file encryption and hashing functi
 
 ### *Installation*
 
-(```bash
-git clone https://github.com/eugenekuloba/cryptography
-cd cryptography)
+   \```bash
+   git clone https://github.com/eugenekuloba/cryptography
+   cd cryptography
 
-(```python
-pip install -r requirements.txt
-)
+   \```python
+   pip install -r requirements.txt
+
 ### *Usage*
 
 <ul>
