@@ -30,5 +30,6 @@ This is a Flask web application that provides file encryption and hashing functi
 
 If you encounter any errors, you can enable debug mode by setting the debug flag to True in the app.run() method:
 
+```python
 if __name__ == '__main__':
     app.run(debug=True)
