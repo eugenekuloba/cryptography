@@ -12,8 +12,8 @@ This is a Flask web application that provides file encryption and hashing functi
 ### *Installation*
 
 <ul>
-  <li>Clone this repository: git clone https://github.com/<username>/file-encryption-hashing.git</li>
-  <li>cd file-encryption-hashing</li>
+  <li>Clone this repository: git clone https://github.com/eugenekuloba/cryptography</li>
+  <li>cd cryptography</li>
   <li>pip install -r requirements.txt</li>
 </ul>
 
