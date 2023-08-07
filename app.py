@@ -1,8 +1,14 @@
+# import the necessary modules
 from flask import Flask, render_template, request , session, redirect, url_for
 from cryptography.fernet import Fernet
+from Crypto.Cipher import DES3, AES,PKCS1_OAEP
+from Crypto.Random import get_random_bytes
+from Crypto.PublicKey import RSA
 import os
 import hashlib
+import base64
 
+# Initialize flask
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 app.config['UPLOAD_FOLDER'] = 'uploads/'
@@ -10,9 +16,24 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 # User data (username and password hash) dictionary
 users = {}
 
+# Generate a new RSA key pair
+rsa_key = RSA.generate(2048)
+
+# Use the public key to create a new PKCS1_OAEP cipher object
+cipher_rsa = PKCS1_OAEP.new(rsa_key.publickey())
+
 # Generate a new encryption key
 key = Fernet.generate_key()
 cipher_suite = Fernet(key)
+des_key = DES3.new('1234567890123456', DES3.MODE_EAX)
+
+# Define the encryption key
+aes_key_128 = b'Sixteen byte key'
+aes_key_256 = get_random_bytes(32)  # 32 bytes = 256 bits
+
+cipher_rsa = PKCS1_OAEP.new(rsa_key.publickey())
+ciphertext = cipher_rsa.encrypt(aes_key_256)
+
 
 # Create upload folder if it does not exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -124,32 +145,102 @@ def encrypt():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     f.save(filepath)
 
-    with open(filepath, 'rb') as file:
-        data = file.read()
-        encrypted_data = cipher_suite.encrypt(data)
-
-    with open(filepath, 'wb') as file:
-        file.write(encrypted_data)
-
+    algorithm = request.form['algorithm']
+    if algorithm == 'des':
+        # Encrypt the file using 3-DES
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            encrypted_data = cipher_suite.encrypt(data)
+        with open(filepath, 'wb') as file:
+            file.write(encrypted_data)
+ 
+    elif algorithm == 'aes128':
+        # Encrypt the file using AES-128 in CBC mode
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            iv = b"\0" * AES.block_size  # Set the initialization vector to all zeros
+            cipher = AES.new(aes_key_128, AES.MODE_CBC, iv)
+            padded_data = data + b"\0" * (AES.block_size - len(data) % AES.block_size)  # Padded to the block size
+            encrypted_data = cipher.encrypt(padded_data)
+        with open(filepath, 'wb') as file:
+            file.write(encrypted_data)
+    elif algorithm == 'aes256':
+        # Encrypt the file using AES-256 in CFB mode
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            iv = b"\0" * AES.block_size  # Set the initialization vector to all zeros
+            cipher = AES.new(aes_key_256, AES.MODE_CFB, iv)
+            encrypted_data = cipher.encrypt(data)
+        with open(filepath, 'wb') as file:
+            file.write(encrypted_data)
+    elif algorithm == 'rsa':
+        # Encrypt the file using RSA public key encryption
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            cipher = PKCS1_OAEP.new(rsa_key.publickey())
+            encrypted_data = cipher.encrypt(data)
+        with open(filepath, 'wb') as file:
+            file.write(encrypted_data)
+   
     return 'File encrypted successfully!'
+
+
     
 @app.route('/decrypt', methods=['POST'])
 def decrypt():
     if 'username' not in session:
         return redirect(url_for('login'))
+
+    # Get the selected algorithm from the form
+    algorithm = request.form.get('algorithm')
+
+    # Get the uploaded file
     f = request.files['file']
     filename = f.filename
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     f.save(filepath)
 
-    with open(filepath, 'rb') as file:
-        encrypted_data = file.read()
-        decrypted_data = cipher_suite.decrypt(encrypted_data)
+    # Decrypt the file based on the selected algorithm
+    if algorithm == 'des':
+        with open(filepath, 'rb') as file:
+            encrypted_data = file.read()
+            decrypted_data = cipher_suite.decrypt(encrypted_data)
+        
+        with open(filepath, 'wb') as file:
+            file.write(decrypted_data)
+            
+          
+      
+    elif algorithm == 'aes128':
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            iv = b"\0" * AES.block_size  # Set the initialization vector to all zeros
+            cipher = AES.new(aes_key_128, AES.MODE_CBC, iv)
+            decrypted_data = cipher.decrypt(data)
+            # Remove the padding
+            decrypted_data = decrypted_data.rstrip(b"\0")
+        with open(filepath, 'wb') as file:
+            file.write(decrypted_data)
 
-    with open(filepath, 'wb') as file:
-        file.write(decrypted_data)
+    elif algorithm == 'aes256':
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            iv = b"\0" * AES.block_size  # Set the initialization vector to all zeros
+            cipher = AES.new(aes_key_256, AES.MODE_CFB, iv)
+            decrypted_data = cipher.decrypt(data)
+        with open(filepath, 'wb') as file:
+            file.write(decrypted_data)
+
+    elif algorithm == 'rsa':
+        with open(filepath, 'rb') as file:
+            data = file.read()
+            cipher = PKCS1_OAEP.new(rsa_key)
+            decrypted_data = cipher.decrypt(data)
+        with open(filepath, 'wb') as file:
+            file.write(decrypted_data)
 
     return 'File decrypted successfully!'
+
 
 @app.route('/hash', methods=['POST'])
 def hash():
