@@ -13,12 +13,18 @@ This is a Flask web application that provides file encryption and hashing functi
 
 <ul>
   <li>Clone this repository: </li>
-  ```python
-  git clone https://github.com/eugenekuloba/cryptography
-  
-  <li>cd cryptography</li>
-  <li>pip install -r requirements.txt</li>
 </ul>
+
+```python
+git clone https://github.com/eugenekuloba/cryptography
+
+<ul>
+  <li>cd cryptography </li>
+</ul>
+
+```python
+pip install -r requirements.txt
+```
 
 ### *Usage*
 
