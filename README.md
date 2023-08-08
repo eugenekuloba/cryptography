@@ -11,17 +11,20 @@ This is a Flask web application that provides file encryption and hashing functi
 
 ### *Installation*
 
-   \```bash
-   git clone https://github.com/eugenekuloba/cryptography
-   cd cryptography
+```bash
+git clone https://github.com/eugenekuloba/cryptography
+cd cryptography
+pip install -r requirements.txt
 
-   \```python
-   pip install -r requirements.txt
-
+```
 ### *Usage*
+Start the Flask server: 
 
+```bash
+python app.py
+
+```
 <ul>
-  <li>Start the Flask server: python app.py</li>
   <li>Open a web browser and go to http://localhost:5000/</li>
   <li>Select the file that you want to encrypt or hash, and click the appropriate button.</li>
   <li>The encrypted or hashed file will be saved in the uploads directory.</li>
