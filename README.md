@@ -25,7 +25,7 @@ python app.py
 
 ```
 <ul>
-  <li>Open a web browser and go to [http://localhost:5000/](http://localhost:5000/)</li>
+  <li>Open a web browser and go to <a href="http://localhost:5000/">http://localhost:5000/</a></li>
   <li>Select the file that you want to encrypt or hash, and click the appropriate button.</li>
   <li>The encrypted or hashed file will be saved in the uploads directory.</li>
 </ul>
